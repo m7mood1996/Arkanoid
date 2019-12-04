@@ -8,15 +8,13 @@ public class Brick {
     private float y;
     private float right;
     private float bottom;
-    private boolean visible;
     private Paint p;
 
-    public Brick(float x, float y, float right, float bottom,Paint p) {
+    public Brick(float x, float y, float width, float hight,Paint p) {
         this.x = x;
         this.y = y;
-        this.right = right;
-        this.bottom = bottom;
-        this.visible = true;
+        this.right = x+width;
+        this.bottom = y + hight;
         this.p = p;
     }
 
@@ -52,13 +50,6 @@ public class Brick {
         this.bottom = bottom;
     }
 
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
 
     public Paint getP() {
         return p;
