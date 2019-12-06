@@ -59,17 +59,13 @@ public class GameView extends View {
         super.onDraw(canvas);
         brickCollection = new BrickCollection(COLs,ROWS,canvasHeight/10,canvasWidth,50,10,50,p);
         canvas.drawRGB(144, 12, 63);
-        canvas.drawText(score,canvasHeight/25,canvasWidth/25,textPaint);
-        canvas.drawText(clickPlay,canvasWidth/2 - 140,canvasHeight/2,textPaint);
-        canvas.drawRect(canvasWidth/2 - paddle.getWidth()/2,canvasHeight - canvasHeight/13,canvasWidth/2 + paddle.getWidth()/2,(canvasHeight - canvasHeight/13) + paddle.getHeight(),p);
-        canvas.drawCircle(canvasWidth/2,canvasHeight - canvasHeight/10,ball2.getRadius(),p);
+        drowTexts(canvas);
+        drowPaddle(canvas);
+        drowBall(canvas);
         //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
-        
-        canvas.drawText(lives,canvasWidth -canvasWidth/7,canvasHeight/18,textPaint);
-        for (int i=0;i< ROWS * COLs ; i++) {
-            Brick brick = brickCollection.getBricks()[i];
-            canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
-        }
+        drowBricks(canvas);
+        drowTextClickPlay(canvas);
+
         //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
 
 
@@ -77,6 +73,31 @@ public class GameView extends View {
 
 
         invalidate();
+    }
+    public void drowTextClickPlay(Canvas canvas){
+        canvas.drawText(clickPlay,canvasWidth/2 - 140,canvasHeight/2,textPaint);//
+
+
+    }
+
+    public void drowTexts(Canvas canvas){
+        canvas.drawText(score,canvasHeight/25,canvasWidth/25,textPaint);
+        canvas.drawText(lives,canvasWidth -canvasWidth/7,canvasHeight/18,textPaint);
+
+    }
+    public void drowPaddle(Canvas canvas){
+        canvas.drawRect(canvasWidth/2 - paddle.getWidth()/2,canvasHeight - canvasHeight/13,canvasWidth/2 + paddle.getWidth()/2,(canvasHeight - canvasHeight/13) + paddle.getHeight(),p);
+    }
+    public void drowBall(Canvas canvas){
+        canvas.drawCircle(canvasWidth/2,canvasHeight - canvasHeight/10,ball2.getRadius(),p);
+    }
+    public void drowBricks(Canvas canvas){
+
+        for (int i=0;i< ROWS * COLs ; i++) {
+            Brick brick = brickCollection.getBricks()[i];
+            canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
+        }
+
     }
 
     @Override
