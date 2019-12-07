@@ -6,21 +6,25 @@ public class Ball {
 
     private float x;
     private float y;
-    private int radius;
+    private float radius;
     private Paint p;
+    private float dx;
+    private float dy;
 
-    public Ball(float x, float y, int radius,Paint p) {
+    public Ball(float x, float y, float radius,Paint p) {
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.p = p;
+        this.dx = 0;
+        this.dy =0;
     }
 
     public float getX() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
@@ -28,15 +32,15 @@ public class Ball {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
-    public int getRadius() {
+    public float getRadius() {
         return radius;
     }
 
-    public void setRadius(int radius) {
+    public void setRadius(float radius) {
         this.radius = radius;
     }
     public Paint getP() {

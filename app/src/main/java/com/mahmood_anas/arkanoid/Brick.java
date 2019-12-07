@@ -2,6 +2,8 @@ package com.mahmood_anas.arkanoid;
 
 import android.graphics.Paint;
 
+import androidx.annotation.NonNull;
+
 public class Brick {
 
     private float x;
@@ -9,6 +11,7 @@ public class Brick {
     private float right;
     private float bottom;
     private Paint p;
+    private  boolean visibility;
 
     public Brick(float x, float y, float width, float hight,Paint p) {
         this.x = x;
@@ -16,6 +19,7 @@ public class Brick {
         this.right = x+width;
         this.bottom = y + hight;
         this.p = p;
+        visibility = true;
     }
 
     public float getX() {
@@ -57,5 +61,20 @@ public class Brick {
 
     public void setP(Paint p) {
         this.p = p;
+    }
+
+    public boolean isVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "x is \t" + x + "\t y is \t" + y + "\t right is :\t" + right + "\t bottom is \t" + bottom + "\tis Vis \t" + visibility;
+
     }
 }

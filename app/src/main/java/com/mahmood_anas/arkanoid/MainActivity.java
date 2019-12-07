@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
-
+    private GameView gameView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,7 +16,56 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        gameView = findViewById(R.id.GameViewLayOut);
 
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(gameView.ball == null);
+                while(true)
+                    gameView.wallTouch();
+            }
+        }).start();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(gameView.newGame == true);
+                while(true)
+                    gameView.bricksTouchA();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(gameView.newGame == true);
+                while(true)
+                    gameView.bricksTouchB();
+            }
+        }).start();
+
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(gameView.newGame == true);
+                while(true)
+                    gameView.bricksTouchC();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(gameView.newGame == true);
+                while(true)
+                    gameView.bricksTouchD();
+            }
+        }).start();
 
     }
 }

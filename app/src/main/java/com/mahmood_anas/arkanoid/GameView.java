@@ -5,9 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+
+import java.util.Random;
 
 public class GameView extends View {
     private String lives;
@@ -15,95 +19,264 @@ public class GameView extends View {
     private String clickPlay;
     int lives_left;
     int score_ern;
-
+    boolean newGame;
     private Brick brick;
-    private int canvasWidth ;
+    private int canvasWidth;
     private int canvasHeight;
-    private final int ROWS =4;
-    private final int COLs = 10;
+    private final int ROWS = 4;
+    private final int COLs = 3;
     private Paint textPaint;
     private float side_corners;
     private float top_corners;
-    private BrickCollection brickCollection;
+    BrickCollection brickCollection;
     Paint p;
     Paddle paddle;
-    Ball ball2;
-
-
+    public Ball ball;
+    int intraction;
+    Random random;
+    float Balldx;
+    float Balldy;
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        score_ern =0;
-        lives_left =3;
+        score_ern = 0;
+        lives_left = 3;
         lives = "Lives: " + lives_left;
         score = "Score: " + score_ern;
         clickPlay = "Click to Play!";
-
-        p =new Paint();
+        newGame = true;
+        p = new Paint();
         p.setColor(Color.BLUE);
         p.setStyle(Paint.Style.FILL);
-        paddle = new Paddle(250,30,p,canvasWidth/2,20);
-        System.out.println("Anaa  : " + canvasWidth);
-        ball2 = new Ball(canvasWidth/2,980,25,p);
-        System.out.println("width is : " );
+        paddle = new Paddle(250, 30, p, canvasWidth / 2, 20);
+
         textPaint = new Paint();
         textPaint.setStyle(Paint.Style.FILL);
         int c = Color.rgb(255, 195, 0);
         textPaint.setColor(c);
         textPaint.setTextSize(50);
-        brick = new Brick(10,10,100,50,p);
+
+        intraction = 0;
+        random = new Random();
+        Balldx = 0;
+        Balldy = 0;
 
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        brickCollection = new BrickCollection(COLs,ROWS,canvasHeight/10,canvasWidth,50,10,50,p);
         canvas.drawRGB(144, 12, 63);
+        if (intraction == 0) {
+            brickCollection = new BrickCollection(COLs, ROWS, canvasHeight / 10, canvasWidth, 100, 10, 100, p);
+            ball = new Ball(canvasWidth / 2, canvasHeight - canvasHeight / 10, 15, p);
+
+        }
         drowTexts(canvas);
         drowPaddle(canvas);
-        drowBall(canvas);
+        if(newGame == true)
+            drowBall(canvas,0,0);
+
+        else {
+            drowBall(canvas, Balldx, Balldy);
+            //System.out.println("speed" + Balldy);
+        }
         //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
         drowBricks(canvas);
-        drowTextClickPlay(canvas);
+        if (newGame == true) {
+            drowTextClickPlay(canvas);
+            Balldx = getRandomSpeedX();
+            Balldy =  (random.nextInt() % 10);
+            if(Balldy >0)
+                Balldy = Balldy * -1;
+            if (Balldy == 0)
+                Balldy = -1;
+            Balldx = -5;
+            Balldy =-4;
+            //Log.d("dx,dy", String.valueOf(Balldx));
+            //Log.d("dy", String.valueOf(Balldy));
+
+        }
 
         //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
 
-
-
-
-
+        intraction=1;
         invalidate();
     }
-    public void drowTextClickPlay(Canvas canvas){
-        canvas.drawText(clickPlay,canvasWidth/2 - 140,canvasHeight/2,textPaint);//
 
+    public void drowTextClickPlay(Canvas canvas) {
+        canvas.drawText(clickPlay, canvasWidth / 2 - 140, canvasHeight / 2, textPaint);//
+    }
+
+    public void drowTexts(Canvas canvas) {
+        canvas.drawText(score, canvasHeight / 25, canvasWidth / 25, textPaint);
+        canvas.drawText(lives, canvasWidth - canvasWidth / 7, canvasHeight / 18, textPaint);
 
     }
 
-    public void drowTexts(Canvas canvas){
-        canvas.drawText(score,canvasHeight/25,canvasWidth/25,textPaint);
-        canvas.drawText(lives,canvasWidth -canvasWidth/7,canvasHeight/18,textPaint);
+    public void drowPaddle(Canvas canvas) {
+        canvas.drawRect(canvasWidth / 2 - paddle.getWidth() / 2, canvasHeight - canvasHeight / 13, canvasWidth / 2 + paddle.getWidth() / 2, (canvasHeight - canvasHeight / 13) + paddle.getHeight(), p);
+    }
 
-    }
-    public void drowPaddle(Canvas canvas){
-        canvas.drawRect(canvasWidth/2 - paddle.getWidth()/2,canvasHeight - canvasHeight/13,canvasWidth/2 + paddle.getWidth()/2,(canvasHeight - canvasHeight/13) + paddle.getHeight(),p);
-    }
-    public void drowBall(Canvas canvas){
-        canvas.drawCircle(canvasWidth/2,canvasHeight - canvasHeight/10,ball2.getRadius(),p);
-    }
-    public void drowBricks(Canvas canvas){
+    public void drowBall(Canvas canvas, float dx , float dy) {
 
-        for (int i=0;i< ROWS * COLs ; i++) {
+        ball.setX(ball.getX()+dx);
+        ball.setY(ball.getY()+dy);
+
+        /*
+        if(ball.getX() +ball.getRadius() == canvasWidth) {
+            ball.setX(ball.getX() - dx);
+            Balldx = Balldx * -1;
+        }
+        if(ball.getY() - ball.getRadius() <= canvasHeight/24) {
+            ball.setY(ball.getY() - dy);
+            Balldy = Balldy * -1;
+        }
+        if(ball.getX() - ball.getRadius() == 0){
+            ball.setX(ball.getX() - dx);
+            Balldx = Balldx * -1;
+        }
+        if(ball.getY() + ball.getRadius() == canvasHeight - canvasHeight/24) {
+            ball.setY(ball.getY() - dy);
+            Balldy = Balldy * -1;
+        }
+
+         */
+        //toched();
+        //System.out.println("x = "+ ball.getX()+ ",y = " + ball.getY() + ",dx = " + Balldx + ",dy = " + Balldy );
+
+
+        canvas.drawCircle(ball.getX(),ball.getY(), ball.getRadius(), ball.getP());
+    }
+
+    public void drowBricks(Canvas canvas) {
+
+        for (int i = 0; i < ROWS * COLs; i++) {
             Brick brick = brickCollection.getBricks()[i];
-            canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
+            if(brick.isVisibility())
+                canvas.drawRect(brick.getX(), brick.getY(), brick.getRight(), brick.getBottom(), brick.getP());
         }
 
     }
 
+/*
+    public void toched(){
+        for (int i = 0; i < ROWS * COLs; i++) {
+            Brick brick = brickCollection.getBricks()[i];
+            if(brick.getBottom() == ball.getY() - ball.getRadius() && ball.getX()  >= brick.getX() && ball.getX() <= brick.getRight() ){
+                brick.setVisibility(false);
+                // add point to score
+            }
+            else if (brick.getRight() == ball.getX() - ball.getRadius() && ball.getY() <= brick.getBottom() && ball.getY() >= brick.getY() ){
+                brick.setVisibility(false);
+            }
+            else if (brick.getY() == ball.getY() +ball.getRadius() && ball.getX()  >= brick.getX() && ball.getX() <= brick.getRight()){
+                brick.setVisibility(false);
+            }
+            else if (brick.getX() == ball.getX() + ball.getRadius() && ball.getY() <= brick.getBottom() && ball.getY() >= brick.getY()){
+                brick.setVisibility(false);
+            }
+
+        }
+
+    }
+
+ */
+    public void wallTouch(){
+        if(ball.getX() +ball.getRadius()  >= canvasWidth) {
+            ball.setX(ball.getX() - Balldx);
+            Balldx = Balldx * -1;
+        }
+        if(ball.getY() - ball.getRadius()  <= canvasHeight/24) {
+            ball.setY(ball.getY() - Balldy);
+            Balldy = Balldy * -1;
+        }
+        if(ball.getX() - ball.getRadius() <= 0){
+           ball.setX(ball.getX() - Balldx);
+            Balldx = Balldx * -1;
+        }
+        if(ball.getY() + ball.getRadius()  >= canvasHeight - canvasHeight/24) {
+            ball.setY(ball.getY() - Balldy);
+            Balldy = Balldy * -1;
+        }
+    }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         canvasWidth = w;
         canvasHeight = h;
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+
+            case MotionEvent.ACTION_DOWN:
+                newGame = false;
+                break;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    public float getRandomSpeedX() {
+
+        float r = random.nextInt() % 10;
+        float t = random.nextInt() %100;
+        if (t > 50)
+            return r;
+        return -1 * r;
+    }
+
+    public void bricksTouchA() {
+        for (int i = 0; i < brickCollection.getSize(); i++) {
+            Brick brick = brickCollection.getBricks()[i];
+            if(brick.isVisibility() && brick.getBottom() >= ball.getY() - ball.getRadius() + Balldy && brick.getBottom() <= ball.getY() - ball.getRadius()-Balldy && ball.getX() <= brick.getRight() && ball.getX() >=brick.getX()){
+                Balldy = Balldy * -1;
+                brick.setVisibility(false);
+
+                // add point to score
+            }
+        }
+
+    }
+
+    public void bricksTouchB() {
+        for (int i = 0; i < brickCollection.getSize(); i++) {
+            Brick brick = brickCollection.getBricks()[i];
+
+            if(brick.isVisibility() && brick.getX() <= ball.getX() + ball.getRadius()+Balldx && brick.getX() >= ball.getX() + ball.getRadius()-Balldx && ball.getY() <=brick.getBottom() && ball.getY() >= brick.getY() ){
+
+                brick.setVisibility(false);
+                Balldx = Balldx * -1;
+                // add point to score
+            }
+
+
+        }
+
+    }
+
+    public void bricksTouchC() {
+        for (int i = 0; i < brickCollection.getSize(); i++) {
+            Brick brick = brickCollection.getBricks()[i];
+            if (brick.isVisibility() && brick.getY() >= ball.getY() + ball.getRadius()+ Balldy && brick.getY() <= ball.getY() + ball.getRadius() + Balldy && ball.getX() >= brick.getX() && ball.getX() <= brick.getRight()) {
+                brick.setVisibility(false);
+                Balldy = Balldy * -1;
+            }
+        }
+    }
+
+    public void bricksTouchD(){
+        for (int i = 0; i < brickCollection.getSize(); i++) {
+            Brick brick = brickCollection.getBricks()[i];
+            if (brick.isVisibility() && brick.getRight()+Balldx >= ball.getX() - ball.getRadius() && brick.getRight() -Balldx <= ball.getX()- ball.getRadius() && ball.getY() > brick.getY() && ball.getY()<brick.getBottom() ) {
+                Log.d("hello","gyus" +brick.isVisibility());
+                brick.setVisibility(false);
+                Balldx = Balldx * -1;
+            }
+
+        }
+
+    }
+
 }
