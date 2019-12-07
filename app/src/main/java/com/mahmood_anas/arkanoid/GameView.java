@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Random;
 
+import static android.os.SystemClock.sleep;
+
 public class GameView extends View {
     private String lives;
     private String score;
@@ -33,9 +35,12 @@ public class GameView extends View {
     Paddle paddle;
     public Ball ball;
     int intraction;
+    float paddleleft;
+    float paddleright;
     Random random;
     float Balldx;
     float Balldy;
+    int paddle_dx;
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         score_ern = 0;
@@ -47,14 +52,11 @@ public class GameView extends View {
         p = new Paint();
         p.setColor(Color.BLUE);
         p.setStyle(Paint.Style.FILL);
-        paddle = new Paddle(250, 30, p, canvasWidth / 2, 20);
-
         textPaint = new Paint();
         textPaint.setStyle(Paint.Style.FILL);
         int c = Color.rgb(255, 195, 0);
         textPaint.setColor(c);
         textPaint.setTextSize(50);
-
         intraction = 0;
         random = new Random();
         Balldx = 0;
@@ -69,6 +71,14 @@ public class GameView extends View {
         if (intraction == 0) {
             brickCollection = new BrickCollection(COLs, ROWS, canvasHeight / 10, canvasWidth, 100, 10, 100, p);
             ball = new Ball(canvasWidth / 2, canvasHeight - canvasHeight / 10, 15, p);
+            paddle = new Paddle(250, 30, p, canvasWidth / 2, canvasHeight - canvasHeight / 13);
+           /* paddleleft = (canvasWidth / 2) - (paddle.getWidth() / 2);
+            paddleright = (canvasWidth / 2 + paddle.getWidth() / 2);
+            paddle.setX(paddleleft);
+            paddle.setY(canvasHeight - canvasHeight / 13);
+            paddle.setWidth(paddleright);
+            paddle.setHeight((canvasHeight - canvasHeight / 13) + paddle.getHeight());*/
+
 
         }
         drowTexts(canvas);
@@ -114,7 +124,21 @@ public class GameView extends View {
     }
 
     public void drowPaddle(Canvas canvas) {
-        canvas.drawRect(canvasWidth / 2 - paddle.getWidth() / 2, canvasHeight - canvasHeight / 13, canvasWidth / 2 + paddle.getWidth() / 2, (canvasHeight - canvasHeight / 13) + paddle.getHeight(), p);
+
+            while(paddle_dx>0 && paddle.getRight() < canvasWidth - 5 ) {
+                paddle.setLeft(paddle.getLeft() +1);
+                paddle.setRight(paddle.getRight() +1);
+                canvas.drawRect(paddle.getLeft(), paddle.getY(), paddle.getRight(), paddle.getBotttom(), paddle.getP());
+                paddle_dx--;
+            }
+            while(paddle_dx<0 && paddle.getLeft() > 5) {
+                paddle.setLeft(paddle.getLeft() - 1);
+                paddle.setRight(paddle.getRight() - 1);
+                canvas.drawRect(paddle.getLeft(), paddle.getY(), paddle.getRight(), paddle.getBotttom(), paddle.getP());
+                paddle_dx++;
+            }
+        canvas.drawRect(paddle.getLeft(), paddle.getY(), paddle.getRight(), paddle.getBotttom(), paddle.getP());
+
     }
 
     public void drowBall(Canvas canvas, float dx , float dy) {

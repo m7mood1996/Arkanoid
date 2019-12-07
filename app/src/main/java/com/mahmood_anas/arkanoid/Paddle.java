@@ -4,35 +4,35 @@ import android.graphics.Paint;
 
 public class Paddle {
 
-    private float width;
-    private float height;
+    private float right;
+    private float botttom;
     private Paint p;
-    private float x;
+    private float left;
     private float y;
 
 
     public Paddle(float width, float height, Paint p, float x, float y) {
-        this.width = width;
-        this.height = height;
+        this.right = x + width/2;
+        this.botttom = y + height;
         this.p = p;
-        this.x = x;
+        this.left = x - width/2 ;
         this.y = y;
     }
 
-    public float getWidth() {
-        return width;
+    public float getRight() {
+        return right;
     }
 
-    public void setWidth(float width) {
-        this.width = width;
+    public void setRight(float right) {
+        this.right = right;
     }
 
-    public float getHeight() {
-        return height;
+    public float getBotttom() {
+        return botttom;
     }
 
-    public void setHeight(float height) {
-        this.height = height;
+    public void setBotttom(float botttom) {
+        this.botttom = botttom;
     }
 
     public Paint getP() {
@@ -43,12 +43,13 @@ public class Paddle {
         this.p = p;
     }
 
-    public float getX() {
-        return x;
+    public float getLeft() {
+        return left;
     }
 
-    public void setX(float x) {
-        this.x = x;
+    public void setLeft(float left) {
+        this.left = left;
+
     }
 
     public float getY() {
