@@ -19,6 +19,7 @@ public class GameView extends View {
     private String lives;
     private String score;
     private String clickPlay;
+    private String GameOverPlay;
     int lives_left;
     int score_ern;
     boolean newGame;
@@ -41,6 +42,8 @@ public class GameView extends View {
     float Balldx;
     float Balldy;
     int paddle_dx;
+    boolean gameOver;
+    boolean lostLive;
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         score_ern = 0;
@@ -48,6 +51,7 @@ public class GameView extends View {
         lives = "Lives: " + lives_left;
         score = "Score: " + score_ern;
         clickPlay = "Click to Play!";
+        GameOverPlay = "Game Over - You Loss!";
         newGame = true;
         p = new Paint();
         p.setColor(Color.BLUE);
@@ -61,6 +65,8 @@ public class GameView extends View {
         random = new Random();
         Balldx = 0;
         Balldy = 0;
+        gameOver = false;
+        lostLive = false;
 
     }
 
@@ -83,30 +89,68 @@ public class GameView extends View {
         }
         drowTexts(canvas);
         drowPaddle(canvas);
-        if(newGame == true)
-            drowBall(canvas,0,0);
 
-        else {
-            drowBall(canvas, Balldx, Balldy);
-            //System.out.println("speed" + Balldy);
-        }
+
+
+
         //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
         drowBricks(canvas);
         if (newGame == true) {
+            drowBall(canvas,0,0);
             drowTextClickPlay(canvas);
             Balldx = getRandomSpeedX();
-            Balldy =  (random.nextInt() % 10);
+            Balldy =  (random.nextInt() % 5);
             if(Balldy >0)
                 Balldy = Balldy * -1;
             if (Balldy == 0)
                 Balldy = -1;
-            Balldx = -5;
-            Balldy =-4;
+
             //Log.d("dx,dy", String.valueOf(Balldx));
             //Log.d("dy", String.valueOf(Balldy));
 
         }
 
+        else if(lostLive == true){
+            drowBall(canvas,0,0);
+            drowTextClickPlay(canvas);
+            Balldx = getRandomSpeedX();
+            Balldy =  (random.nextInt() % 5);
+            if(Balldy >0)
+                Balldy = Balldy * -1;
+            if (Balldy == 0)
+                Balldy = -1;
+
+            ball.setX(canvasWidth / 2);
+            ball.setY(canvasHeight - canvasHeight / 10);
+            float wi = paddle.getRight() -paddle.getLeft();
+            paddle.setLeft(canvasWidth/2 -wi/2 );
+            paddle.setRight(canvasWidth/2 + wi/2);
+
+        }
+        else if(gameOver == true){
+            drowGameOverText(canvas);
+            lives_left =3;
+            score_ern = 0;
+            Balldx = getRandomSpeedX();
+            Balldy =  (random.nextInt() % 5);
+            if(Balldy >0)
+                Balldy = Balldy * -1;
+            if (Balldy == 0)
+                Balldy = -1;
+            ball.setX(canvasWidth / 2);
+            ball.setY(canvasHeight - canvasHeight / 10);
+            drowBall(canvas, 0, 0);
+            for (int i =0; i < COLs * ROWS;i++){
+                brickCollection.getBricks()[i].setVisibility(true);
+            }
+            float wi = paddle.getRight() -paddle.getLeft();
+            paddle.setLeft(canvasWidth/2 -wi/2 );
+            paddle.setRight(canvasWidth/2 + wi/2);
+        }
+        else {
+            drowBall(canvas, Balldx, Balldy);
+            //System.out.println("speed" + Balldy);
+        }
         //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
 
         intraction=1;
@@ -117,8 +161,13 @@ public class GameView extends View {
         canvas.drawText(clickPlay, canvasWidth / 2 - 140, canvasHeight / 2, textPaint);//
     }
 
+    public void drowGameOverText(Canvas canvas) {
+        canvas.drawText(GameOverPlay, canvasWidth / 2 - 140, canvasHeight / 2, textPaint);//
+    }
+
     public void drowTexts(Canvas canvas) {
         score = "Score: " + score_ern;
+        lives = "Lives: " + lives_left;
         canvas.drawText(score, canvasHeight / 25, canvasWidth / 25, textPaint);
         canvas.drawText(lives, canvasWidth - canvasWidth / 7, canvasHeight / 18, textPaint);
 
@@ -146,28 +195,6 @@ public class GameView extends View {
 
         ball.setX(ball.getX()+dx);
         ball.setY(ball.getY()+dy);
-
-        /*
-        if(ball.getX() +ball.getRadius() == canvasWidth) {
-            ball.setX(ball.getX() - dx);
-            Balldx = Balldx * -1;
-        }
-        if(ball.getY() - ball.getRadius() <= canvasHeight/24) {
-            ball.setY(ball.getY() - dy);
-            Balldy = Balldy * -1;
-        }
-        if(ball.getX() - ball.getRadius() == 0){
-            ball.setX(ball.getX() - dx);
-            Balldx = Balldx * -1;
-        }
-        if(ball.getY() + ball.getRadius() == canvasHeight - canvasHeight/24) {
-            ball.setY(ball.getY() - dy);
-            Balldy = Balldy * -1;
-        }
-
-         */
-        //toched();
-        //System.out.println("x = "+ ball.getX()+ ",y = " + ball.getY() + ",dx = " + Balldx + ",dy = " + Balldy );
 
 
         canvas.drawCircle(ball.getX(),ball.getY(), ball.getRadius(), ball.getP());
@@ -222,7 +249,7 @@ public class GameView extends View {
         if(ball.getY() + ball.getRadius()  >= canvasHeight - canvasHeight/26) {
             ball.setY(ball.getY() - Balldy);
             Balldy = Balldy * -1;
-            //GameOver();
+            GameOver();
         }
         if(ball.getY() + ball.getRadius() - Balldy <= paddle.getY() && ball.getY() + ball.getRadius() + Balldy >= paddle.getY() && ball.getX() >= paddle.getLeft() && ball.getX() <= paddle.getRight() ){
             ball.setY(ball.getY() - Balldy);
@@ -242,6 +269,8 @@ public class GameView extends View {
 
             case MotionEvent.ACTION_DOWN:
                 newGame = false;
+                lostLive = false;
+                gameOver = false;
                 break;
         }
 
@@ -373,5 +402,18 @@ public class GameView extends View {
 
 
 
+    }
+
+    public void GameOver(){
+
+        Balldx =0;
+        Balldy =0;
+        if(lives_left == 0){
+            gameOver = true;
+            lostLive = false;
+            return;
+        }
+        lives_left--;
+        lostLive = true;
     }
 }
