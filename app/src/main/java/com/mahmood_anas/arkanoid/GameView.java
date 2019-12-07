@@ -26,7 +26,7 @@ public class GameView extends View {
     private int canvasWidth;
     private int canvasHeight;
     private final int ROWS = 4;
-    private final int COLs = 3;
+    private final int COLs = 10;
     private Paint textPaint;
     private float side_corners;
     private float top_corners;
@@ -69,7 +69,7 @@ public class GameView extends View {
         super.onDraw(canvas);
         canvas.drawRGB(144, 12, 63);
         if (intraction == 0) {
-            brickCollection = new BrickCollection(COLs, ROWS, canvasHeight / 10, canvasWidth, 100, 10, 100, p);
+            brickCollection = new BrickCollection(COLs, ROWS, canvasHeight / 10, canvasWidth, 100, 100, 50, p);
             ball = new Ball(canvasWidth / 2, canvasHeight - canvasHeight / 10, 15, p);
             paddle = new Paddle(250, 30, p, canvasWidth / 2, canvasHeight - canvasHeight / 13);
            /* paddleleft = (canvasWidth / 2) - (paddle.getWidth() / 2);
@@ -118,6 +118,7 @@ public class GameView extends View {
     }
 
     public void drowTexts(Canvas canvas) {
+        score = "Score: " + score_ern;
         canvas.drawText(score, canvasHeight / 25, canvasWidth / 25, textPaint);
         canvas.drawText(lives, canvasWidth - canvasWidth / 7, canvasHeight / 18, textPaint);
 
@@ -256,10 +257,19 @@ public class GameView extends View {
             Brick brick = brickCollection.getBricks()[i];
             if(brick.isVisibility() && brick.getBottom() >= ball.getY() - ball.getRadius() + Balldy && brick.getBottom() <= ball.getY() - ball.getRadius()-Balldy && ball.getX() <= brick.getRight() && ball.getX() >=brick.getX()){
                 Balldy = Balldy * -1;
+                score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
 
                 // add point to score
             }
+            if(brick.isVisibility() && Math.pow(ball.getX()-brick.getX(),2) + Math.pow(ball.getY()-brick.getY(),2) <= Math.pow(ball.getRadius(),2)){
+                Balldy = Balldy * -1;
+                Balldx = Balldx * -1;
+                score_ern = score_ern + lives_left*5;
+                brick.setVisibility(false);
+
+            }
+
         }
 
     }
@@ -269,10 +279,17 @@ public class GameView extends View {
             Brick brick = brickCollection.getBricks()[i];
 
             if(brick.isVisibility() && brick.getX() <= ball.getX() + ball.getRadius()+Balldx && brick.getX() >= ball.getX() + ball.getRadius()-Balldx && ball.getY() <=brick.getBottom() && ball.getY() >= brick.getY() ){
-
+                score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
                 Balldx = Balldx * -1;
                 // add point to score
+            }
+            if(brick.isVisibility() && Math.pow(ball.getX()-brick.getRight(),2) + Math.pow(ball.getY()-brick.getY(),2) <= Math.pow(ball.getRadius(),2)){
+                Balldy = Balldy * -1;
+                Balldx = Balldx * -1;
+                score_ern = score_ern + lives_left*5;
+                brick.setVisibility(false);
+
             }
 
 
@@ -283,20 +300,36 @@ public class GameView extends View {
     public void bricksTouchC() {
         for (int i = 0; i < brickCollection.getSize(); i++) {
             Brick brick = brickCollection.getBricks()[i];
-            if (brick.isVisibility() && brick.getY() >= ball.getY() + ball.getRadius()+ Balldy && brick.getY() <= ball.getY() + ball.getRadius() + Balldy && ball.getX() >= brick.getX() && ball.getX() <= brick.getRight()) {
+            if (brick.isVisibility() && brick.getY() + Balldy >= ball.getY() + ball.getRadius() && brick.getY() - Balldy <= ball.getY() + ball.getRadius() && ball.getX()+Balldx >= brick.getX() && ball.getX()- Balldx <= brick.getRight()) {
+                score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
                 Balldy = Balldy * -1;
             }
+            if(brick.isVisibility() && Math.pow(ball.getX()-brick.getX(),2) + Math.pow(ball.getY()-brick.getBottom(),2) <= Math.pow(ball.getRadius(),2)){
+                Balldy = Balldy * -1;
+                Balldx = Balldx * -1;
+                score_ern = score_ern + lives_left*5;
+                brick.setVisibility(false);
+
+            }
+
         }
     }
 
     public void bricksTouchD(){
         for (int i = 0; i < brickCollection.getSize(); i++) {
             Brick brick = brickCollection.getBricks()[i];
-            if (brick.isVisibility() && brick.getRight()+Balldx >= ball.getX() - ball.getRadius() && brick.getRight() -Balldx <= ball.getX()- ball.getRadius() && ball.getY() > brick.getY() && ball.getY()<brick.getBottom() ) {
-                Log.d("hello","gyus" +brick.isVisibility());
+            if (brick.isVisibility() && brick.getRight()+Balldx <= ball.getX() - ball.getRadius() && brick.getRight() -Balldx >= ball.getX()- ball.getRadius() && ball.getY() > brick.getY() && ball.getY()<brick.getBottom() ) {
+                score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
                 Balldx = Balldx * -1;
+            }
+            if(brick.isVisibility() && Math.pow(ball.getX()-brick.getRight(),2) + Math.pow(ball.getY()-brick.getBottom(),2) <= Math.pow(ball.getRadius(),2)){
+                Balldy = Balldy * -1;
+                Balldx = Balldx * -1;
+                score_ern = score_ern + lives_left*5;
+                brick.setVisibility(false);
+
             }
 
         }
