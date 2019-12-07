@@ -25,8 +25,8 @@ public class GameView extends View {
     private Brick brick;
     private int canvasWidth;
     private int canvasHeight;
-    private final int ROWS = 4;
-    private final int COLs = 10;
+    private final int ROWS = 5;
+    private final int COLs = 7;
     private Paint textPaint;
     private float side_corners;
     private float top_corners;
@@ -69,7 +69,7 @@ public class GameView extends View {
         super.onDraw(canvas);
         canvas.drawRGB(144, 12, 63);
         if (intraction == 0) {
-            brickCollection = new BrickCollection(COLs, ROWS, canvasHeight / 10, canvasWidth, 100, 100, 50, p);
+            brickCollection = new BrickCollection(COLs, ROWS, canvasHeight / 10, canvasWidth, 10, 10, 50, p);
             ball = new Ball(canvasWidth / 2, canvasHeight - canvasHeight / 10, 15, p);
             paddle = new Paddle(250, 30, p, canvasWidth / 2, canvasHeight - canvasHeight / 13);
            /* paddleleft = (canvasWidth / 2) - (paddle.getWidth() / 2);
@@ -219,7 +219,12 @@ public class GameView extends View {
            ball.setX(ball.getX() - Balldx);
             Balldx = Balldx * -1;
         }
-        if(ball.getY() + ball.getRadius()  >= canvasHeight - canvasHeight/24) {
+        if(ball.getY() + ball.getRadius()  >= canvasHeight - canvasHeight/26) {
+            ball.setY(ball.getY() - Balldy);
+            Balldy = Balldy * -1;
+            //GameOver();
+        }
+        if(ball.getY() + ball.getRadius() - Balldy <= paddle.getY() && ball.getY() + ball.getRadius() + Balldy >= paddle.getY() && ball.getX() >= paddle.getLeft() && ball.getX() <= paddle.getRight() ){
             ball.setY(ball.getY() - Balldy);
             Balldy = Balldy * -1;
         }
@@ -336,4 +341,37 @@ public class GameView extends View {
 
     }
 
+    public void paddleMoveR(int z) {
+
+            if(paddle.getRight() > canvasWidth-5)
+                return;
+
+            //while(gameView == null);
+            //while(gameView.paddle == null);
+            //System.out.println("Game is \t" + gameView.paddle.getHeight());
+            System.out.println("Ana d5alt hon 5ara" + z);
+
+            paddle.setLeft(paddle.getLeft() + 1);
+            paddle.setRight(paddle.getRight() + 1);
+            sleep(1);
+            //System.out.println("K is now :\t" + k);
+
+    }
+    public void paddleMoveL(int z) {
+        if(paddle.getLeft() < 5)
+            return;
+        System.out.println("5araaa !!" + z);
+            //gameView.paddle.setWidth(gameView.paddle.getWidth() - 20);
+            //System.out.println("K will be :\t" + k);
+        paddle.setLeft(paddle.getLeft() -1);
+        paddle.setRight(paddle.getRight() -1);
+        sleep(1);
+
+
+
+
+
+
+
+    }
 }

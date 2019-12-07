@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GameView gameView;
     private SensorManager sensorManager;
     private Sensor orientaion;
-
+    int z;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,10 +24,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
+        z = 0;
         gameView = findViewById(R.id.GameViewLayOut);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        orientaion = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        orientaion = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         if ( orientaion == null)
         {
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }).start();
 
 
-        /*new Thread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 while(gameView.newGame == true);
@@ -89,7 +89,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     gameView.bricksTouchD();
             }
         }).start();
-        */
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(gameView.newGame == true);
+                while(true) {
+                    while (z > 0)
+                        gameView.paddleMoveR(z);
+                    while ( z<0)
+                        gameView.paddleMoveL(z);
+                }
+            }
+        }).start();
+
+
     }
 
     @Override
@@ -110,30 +124,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         switch (event.sensor.getType())
         {
 
-            case Sensor.TYPE_GYROSCOPE:
+            case Sensor.TYPE_ACCELEROMETER:
                 // Get Sensor Orientation Angles (in degrees) around 3 axis
                 float x = event.values[0];  // Pitch (the angle around the x-axis)
                 float y = event.values[1];  // Roll (the angle around the y-axis)
-                float z = event.values[2];  // Azimuth (the angle around the z-axis)
-                if (z > 1.0f)
+                z = (int)y;  // Azimuth (the angle around the z-axis)
+                /*while (z > 0.0f)
                 {
                     //while(gameView == null);
                     //while(gameView.paddle == null);
                     //System.out.println("Game is \t" + gameView.paddle.getHeight());
                     // System.out.println("Ana d5alt hon sadeke");
-                    gameView.paddle_dx = 300;
+                    gameView.paddle_dx = 10;
                     //System.out.println("K is now :\t" + k);
                 }
-                else if (z < -1.0f)
+                while (z < -0.0f)
                 {
                     //System.out.println("5araaa !!");
                     //gameView.paddle.setWidth(gameView.paddle.getWidth() - 20);
                     //System.out.println("K will be :\t" + k);
-                    gameView.paddle_dx = -300;
+                    gameView.paddle_dx = -10;
                 }
-                else{
+                if (z == 0){
                     gameView.paddle_dx = 0;
                 }
+
+                 */
                 break;
             default:
                 // do nothing
