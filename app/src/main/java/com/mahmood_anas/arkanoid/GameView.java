@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -20,6 +21,7 @@ public class GameView extends View {
     private String score;
     private String clickPlay;
     private String GameOverPlay;
+    private String GameOverwon;
     int lives_left;
     int score_ern;
     boolean newGame;
@@ -44,6 +46,9 @@ public class GameView extends View {
     int paddle_dx;
     boolean gameOver;
     boolean lostLive;
+    MediaPlayer mediaPlayer;
+    boolean soundon;
+    boolean gameOverwon;
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         score_ern = 0;
@@ -52,6 +57,7 @@ public class GameView extends View {
         score = "Score: " + score_ern;
         clickPlay = "Click to Play!";
         GameOverPlay = "Game Over - You Loss!";
+        GameOverwon = "Game Over - You Loss!";
         newGame = true;
         p = new Paint();
         p.setColor(Color.BLUE);
@@ -66,7 +72,9 @@ public class GameView extends View {
         Balldx = 0;
         Balldy = 0;
         gameOver = false;
+        gameOverwon = false;
         lostLive = false;
+        soundon= false;
 
     }
 
@@ -127,7 +135,7 @@ public class GameView extends View {
             paddle.setRight(canvasWidth/2 + wi/2);
 
         }
-        else if(gameOver == true){
+        else if(gameOver == true || gameOverwon ==true){
             drowGameOverText(canvas);
             lives_left =3;
             score_ern = 0;
@@ -162,7 +170,11 @@ public class GameView extends View {
     }
 
     public void drowGameOverText(Canvas canvas) {
+        if (gameOver == true)
         canvas.drawText(GameOverPlay, canvasWidth / 2 - 140, canvasHeight / 2, textPaint);//
+        else if (gameOverwon ==true){
+            canvas.drawText(GameOverwon, canvasWidth / 2 - 140, canvasHeight / 2, textPaint);
+        }
     }
 
     public void drowTexts(Canvas canvas) {
@@ -210,29 +222,7 @@ public class GameView extends View {
 
     }
 
-/*
-    public void toched(){
-        for (int i = 0; i < ROWS * COLs; i++) {
-            Brick brick = brickCollection.getBricks()[i];
-            if(brick.getBottom() == ball.getY() - ball.getRadius() && ball.getX()  >= brick.getX() && ball.getX() <= brick.getRight() ){
-                brick.setVisibility(false);
-                // add point to score
-            }
-            else if (brick.getRight() == ball.getX() - ball.getRadius() && ball.getY() <= brick.getBottom() && ball.getY() >= brick.getY() ){
-                brick.setVisibility(false);
-            }
-            else if (brick.getY() == ball.getY() +ball.getRadius() && ball.getX()  >= brick.getX() && ball.getX() <= brick.getRight()){
-                brick.setVisibility(false);
-            }
-            else if (brick.getX() == ball.getX() + ball.getRadius() && ball.getY() <= brick.getBottom() && ball.getY() >= brick.getY()){
-                brick.setVisibility(false);
-            }
 
-        }
-
-    }
-
- */
     public void wallTouch(){
         if(ball.getX() +ball.getRadius()  >= canvasWidth) {
             ball.setX(ball.getX() - Balldx);
@@ -251,10 +241,18 @@ public class GameView extends View {
             Balldy = Balldy * -1;
             GameOver();
         }
-        if(ball.getY() + ball.getRadius() - Balldy <= paddle.getY() && ball.getY() + ball.getRadius() + Balldy >= paddle.getY() && ball.getX() >= paddle.getLeft() && ball.getX() <= paddle.getRight() ){
+        if(ball.getY() + ball.getRadius() - Balldy-1 <= paddle.getY() && ball.getY() + ball.getRadius() + Balldy+1 >= paddle.getY() && ball.getX() >= paddle.getLeft() && ball.getX() <= paddle.getRight() ){
             ball.setY(ball.getY() - Balldy);
             Balldy = Balldy * -1;
         }
+        if( Math.pow(ball.getX()-paddle.getLeft(),2) + Math.pow(ball.getY()-paddle.getY(),2) <= Math.pow(ball.getRadius(),2) || Math.pow(ball.getX()-paddle.getRight(),2) + Math.pow(ball.getY()-paddle.getY(),2) <= Math.pow(ball.getRadius(),2) ){
+
+            ball.setY(ball.getY() - Balldy);
+            ball.setX(ball.getX() - Balldx);
+            Balldy = Balldy * -1;
+            Balldx = Balldx * -1;
+        }
+
     }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -293,16 +291,21 @@ public class GameView extends View {
                 Balldy = Balldy * -1;
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
+                soundon = true;
 
-                // add point to score
+
             }
             if(brick.isVisibility() && Math.pow(ball.getX()-brick.getX(),2) + Math.pow(ball.getY()-brick.getY(),2) <= Math.pow(ball.getRadius(),2)){
                 Balldy = Balldy * -1;
                 Balldx = Balldx * -1;
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
+                soundon = true;
+
 
             }
+            if (brickCollection.allinVis() == true)
+                gameOverwon =true;
 
         }
 
@@ -317,14 +320,20 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 Balldx = Balldx * -1;
                 // add point to score
+                soundon = true;
+
             }
             if(brick.isVisibility() && Math.pow(ball.getX()-brick.getRight(),2) + Math.pow(ball.getY()-brick.getY(),2) <= Math.pow(ball.getRadius(),2)){
                 Balldy = Balldy * -1;
                 Balldx = Balldx * -1;
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
+                soundon = true;
+
 
             }
+            if (brickCollection.allinVis() == true)
+                gameOverwon =true;
 
 
         }
@@ -338,14 +347,20 @@ public class GameView extends View {
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
                 Balldy = Balldy * -1;
+                soundon = true;
+
             }
             if(brick.isVisibility() && Math.pow(ball.getX()-brick.getX(),2) + Math.pow(ball.getY()-brick.getBottom(),2) <= Math.pow(ball.getRadius(),2)){
                 Balldy = Balldy * -1;
                 Balldx = Balldx * -1;
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
+                soundon = true;
+
 
             }
+            if (brickCollection.allinVis() == true)
+                gameOverwon =true;
 
         }
     }
@@ -357,14 +372,21 @@ public class GameView extends View {
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
                 Balldx = Balldx * -1;
+                soundon = true;
+
+
             }
             if(brick.isVisibility() && Math.pow(ball.getX()-brick.getRight(),2) + Math.pow(ball.getY()-brick.getBottom(),2) <= Math.pow(ball.getRadius(),2)){
                 Balldy = Balldy * -1;
                 Balldx = Balldx * -1;
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
+                soundon = true;
+
 
             }
+            if (brickCollection.allinVis() == true)
+                gameOverwon =true;
 
         }
 
@@ -378,7 +400,7 @@ public class GameView extends View {
             //while(gameView == null);
             //while(gameView.paddle == null);
             //System.out.println("Game is \t" + gameView.paddle.getHeight());
-            System.out.println("Ana d5alt hon 5ara" + z);
+
 
             paddle.setLeft(paddle.getLeft() + 1);
             paddle.setRight(paddle.getRight() + 1);
@@ -389,7 +411,7 @@ public class GameView extends View {
     public void paddleMoveL(int z) {
         if(paddle.getLeft() < 5)
             return;
-        System.out.println("5araaa !!" + z);
+
             //gameView.paddle.setWidth(gameView.paddle.getWidth() - 20);
             //System.out.println("K will be :\t" + k);
         paddle.setLeft(paddle.getLeft() -1);
@@ -408,7 +430,7 @@ public class GameView extends View {
 
         Balldx =0;
         Balldy =0;
-        if(lives_left == 0){
+        if(lives_left == 1){
             gameOver = true;
             lostLive = false;
             return;

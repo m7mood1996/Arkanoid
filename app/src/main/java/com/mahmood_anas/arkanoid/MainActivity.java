@@ -3,6 +3,7 @@ package com.mahmood_anas.arkanoid;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.pm.ActivityInfo;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.content.Context;
 import android.view.WindowManager;
@@ -16,7 +17,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private GameView gameView;
     private SensorManager sensorManager;
     private Sensor orientaion;
+    Thread threads[];
     int z;
+    boolean t;
+    boolean firstStart;
+    MediaPlayer mediaPlayer;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        System.out.println("onpause" );
+        sensorManager.unregisterListener(this);
+        for (int i =0;i<6 ; i++){
+            threads[i].interrupt();
+            System.out.println("thread i" + threads[i].isAlive());
+        }
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,9 +44,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         getSupportActionBar().hide();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         z = 0;
+
         gameView = findViewById(R.id.GameViewLayOut);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         orientaion = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mediaPlayer = MediaPlayer.create(this,R.raw.hd_s);
+        threads = new Thread[6];
+        t = false;
+        firstStart = true;
 
         if ( orientaion == null)
         {
@@ -42,12 +66,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             finish();
         }
 
+
+
+
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        System.out.println("onpause1onresume");
+        for (int i =0;i<6 ; i++){
+            if (threads[i] != null)
+            System.out.println("thread i" + threads[i].isAlive());
+        }
+        sensorManager.registerListener(this, orientaion, SensorManager.SENSOR_DELAY_NORMAL);
         new Thread(new Runnable() {
             @Override
             public void run() {
+                threads[0] =Thread.currentThread();
                 while(gameView.ball == null);
-                while(true)
+                while(true) {
                     gameView.wallTouch();
+                    if (Thread.currentThread().isInterrupted())
+                        break;
+                }
             }
         }).start();
 
@@ -55,18 +99,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         new Thread(new Runnable() {
             @Override
             public void run() {
+                threads[1] =Thread.currentThread();
                 while(gameView.newGame == true);
-                while(true)
+                while(true) {
                     gameView.bricksTouchA();
+                    playM();
+                    if(Thread.currentThread().isInterrupted())
+                        break;
+                }
+
             }
         }).start();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+                threads[2] =Thread.currentThread();
                 while(gameView.newGame == true);
-                while(true)
+                while(true) {
                     gameView.bricksTouchB();
+                    playM();
+                    if(Thread.currentThread().isInterrupted())
+                        break;
+                }
             }
         }).start();
 
@@ -75,47 +130,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         new Thread(new Runnable() {
             @Override
             public void run() {
+                threads[3] =Thread.currentThread();
                 while(gameView.newGame == true);
-                while(true)
+                while(true) {
                     gameView.bricksTouchC();
+                    playM();
+                    if(Thread.currentThread().isInterrupted())
+                        break;
+                }
             }
         }).start();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+                threads[4] =Thread.currentThread();
                 while(gameView.newGame == true);
-                while(true)
+                while(true) {
                     gameView.bricksTouchD();
+                    playM();
+                    if(Thread.currentThread().isInterrupted())
+                        break;
+                }
             }
         }).start();
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+                threads[5] =Thread.currentThread();
+
                 while(gameView.newGame == true);
                 while(true) {
                     while (z > 0)
                         gameView.paddleMoveR(z);
                     while ( z<0)
                         gameView.paddleMoveL(z);
+                    if(Thread.currentThread().isInterrupted())
+                        break;
                 }
             }
         }).start();
-
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        sensorManager.unregisterListener(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, orientaion, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -159,5 +214,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+
+    public synchronized void playM(){
+        if(gameView.soundon) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediaPlayer.start();
+
+
+                    gameView.soundon=false;
+                }
+            });
+        }
     }
 }
