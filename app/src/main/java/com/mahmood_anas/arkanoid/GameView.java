@@ -86,22 +86,11 @@ public class GameView extends View {
             brickCollection = new BrickCollection(COLs, ROWS, canvasHeight / 10, canvasWidth, 10, 10, 50, p);
             ball = new Ball(canvasWidth / 2, canvasHeight - canvasHeight / 10, 15, p);
             paddle = new Paddle(250, 30, p, canvasWidth / 2, canvasHeight - canvasHeight / 13);
-           /* paddleleft = (canvasWidth / 2) - (paddle.getWidth() / 2);
-            paddleright = (canvasWidth / 2 + paddle.getWidth() / 2);
-            paddle.setX(paddleleft);
-            paddle.setY(canvasHeight - canvasHeight / 13);
-            paddle.setWidth(paddleright);
-            paddle.setHeight((canvasHeight - canvasHeight / 13) + paddle.getHeight());*/
 
 
         }
         drowTexts(canvas);
         drowPaddle(canvas);
-
-
-
-
-        //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
         drowBricks(canvas);
         if (newGame == true) {
             drowBall(canvas,0,0);
@@ -112,10 +101,14 @@ public class GameView extends View {
                 Balldy = Balldy * -1;
             if (Balldy == 0)
                 Balldy = -1;
-
-            //Log.d("dx,dy", String.valueOf(Balldx));
-            //Log.d("dy", String.valueOf(Balldy));
-
+            while(Balldx == 0 || Balldy == 0){
+                Balldx = getRandomSpeedX();
+                Balldy =  (random.nextInt() % 5);
+                if(Balldy >0)
+                    Balldy = Balldy * -1;
+                if (Balldy == 0)
+                    Balldy = -1;
+            }
         }
 
         else if(lostLive == true){
@@ -127,7 +120,14 @@ public class GameView extends View {
                 Balldy = Balldy * -1;
             if (Balldy == 0)
                 Balldy = -1;
-
+            while(Balldx == 0 || Balldy == 0){
+                Balldx = getRandomSpeedX();
+                Balldy =  (random.nextInt() % 5);
+                if(Balldy >0)
+                    Balldy = Balldy * -1;
+                if (Balldy == 0)
+                    Balldy = -1;
+            }
             ball.setX(canvasWidth / 2);
             ball.setY(canvasHeight - canvasHeight / 10);
             float wi = paddle.getRight() -paddle.getLeft();
@@ -145,6 +145,15 @@ public class GameView extends View {
                 Balldy = Balldy * -1;
             if (Balldy == 0)
                 Balldy = -1;
+            while(Balldx == 0 || Balldy == 0){
+                Balldx = getRandomSpeedX();
+                Balldy =  (random.nextInt() % 5);
+                if(Balldy >0)
+                    Balldy = Balldy * -1;
+                if (Balldy == 0)
+                    Balldy = -1;
+            }
+
             ball.setX(canvasWidth / 2);
             ball.setY(canvasHeight - canvasHeight / 10);
             drowBall(canvas, 0, 0);
@@ -157,9 +166,9 @@ public class GameView extends View {
         }
         else {
             drowBall(canvas, Balldx, Balldy);
-            //System.out.println("speed" + Balldy);
+
         }
-        //canvas.drawRect(brick.getX(),brick.getY(),brick.getRight(),brick.getBottom(),brick.getP());
+
 
         intraction=1;
         invalidate();
@@ -221,7 +230,6 @@ public class GameView extends View {
         }
 
     }
-
 
     public void wallTouch(){
         if(ball.getX() +ball.getRadius()  >= canvasWidth) {
@@ -293,7 +301,6 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 soundon = true;
 
-
             }
             if(brick.isVisibility() && Math.pow(ball.getX()-brick.getX(),2) + Math.pow(ball.getY()-brick.getY(),2) <= Math.pow(ball.getRadius(),2)){
                 Balldy = Balldy * -1;
@@ -302,11 +309,9 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 soundon = true;
 
-
             }
             if (brickCollection.allinVis() == true)
                 gameOverwon =true;
-
         }
 
     }
@@ -330,14 +335,10 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 soundon = true;
 
-
             }
             if (brickCollection.allinVis() == true)
                 gameOverwon =true;
-
-
         }
-
     }
 
     public void bricksTouchC() {
@@ -348,7 +349,6 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 Balldy = Balldy * -1;
                 soundon = true;
-
             }
             if(brick.isVisibility() && Math.pow(ball.getX()-brick.getX(),2) + Math.pow(ball.getY()-brick.getBottom(),2) <= Math.pow(ball.getRadius(),2)){
                 Balldy = Balldy * -1;
@@ -356,12 +356,9 @@ public class GameView extends View {
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
                 soundon = true;
-
-
             }
             if (brickCollection.allinVis() == true)
                 gameOverwon =true;
-
         }
     }
 
@@ -373,8 +370,6 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 Balldx = Balldx * -1;
                 soundon = true;
-
-
             }
             if(brick.isVisibility() && Math.pow(ball.getX()-brick.getRight(),2) + Math.pow(ball.getY()-brick.getBottom(),2) <= Math.pow(ball.getRadius(),2)){
                 Balldy = Balldy * -1;
@@ -382,12 +377,9 @@ public class GameView extends View {
                 score_ern = score_ern + lives_left*5;
                 brick.setVisibility(false);
                 soundon = true;
-
-
             }
             if (brickCollection.allinVis() == true)
                 gameOverwon =true;
-
         }
 
     }
@@ -396,34 +388,17 @@ public class GameView extends View {
 
             if(paddle.getRight() > canvasWidth-5)
                 return;
-
-            //while(gameView == null);
-            //while(gameView.paddle == null);
-            //System.out.println("Game is \t" + gameView.paddle.getHeight());
-
-
             paddle.setLeft(paddle.getLeft() + 1);
             paddle.setRight(paddle.getRight() + 1);
             sleep(1);
-            //System.out.println("K is now :\t" + k);
 
     }
     public void paddleMoveL(int z) {
         if(paddle.getLeft() < 5)
             return;
-
-            //gameView.paddle.setWidth(gameView.paddle.getWidth() - 20);
-            //System.out.println("K will be :\t" + k);
         paddle.setLeft(paddle.getLeft() -1);
         paddle.setRight(paddle.getRight() -1);
         sleep(1);
-
-
-
-
-
-
-
     }
 
     public void GameOver(){

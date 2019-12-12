@@ -184,27 +184,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 float x = event.values[0];  // Pitch (the angle around the x-axis)
                 float y = event.values[1];  // Roll (the angle around the y-axis)
                 z = (int)y;  // Azimuth (the angle around the z-axis)
-                /*while (z > 0.0f)
-                {
-                    //while(gameView == null);
-                    //while(gameView.paddle == null);
-                    //System.out.println("Game is \t" + gameView.paddle.getHeight());
-                    // System.out.println("Ana d5alt hon sadeke");
-                    gameView.paddle_dx = 10;
-                    //System.out.println("K is now :\t" + k);
-                }
-                while (z < -0.0f)
-                {
-                    //System.out.println("5araaa !!");
-                    //gameView.paddle.setWidth(gameView.paddle.getWidth() - 20);
-                    //System.out.println("K will be :\t" + k);
-                    gameView.paddle_dx = -10;
-                }
-                if (z == 0){
-                    gameView.paddle_dx = 0;
-                }
 
-                 */
                 break;
             default:
                 // do nothing
