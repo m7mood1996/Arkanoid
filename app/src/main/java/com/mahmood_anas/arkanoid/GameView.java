@@ -310,8 +310,15 @@ public class GameView extends View {
                 soundon = true;
 
             }
-            if (brickCollection.allinVis() == true)
+            int c =0;
+            for (int l = 0; l < brickCollection.getSize(); l++){
+                if(!brickCollection.getBricks()[l].isVisibility())
+                    c++;
+            }
+            if (c == brickCollection.getSize())
                 gameOverwon =true;
+            //if (brickCollection.allinVis() == true)
+              //  gameOverwon =true;
         }
 
     }
@@ -336,8 +343,15 @@ public class GameView extends View {
                 soundon = true;
 
             }
-            if (brickCollection.allinVis() == true)
+            int c =0;
+            for (int l = 0; l < brickCollection.getSize(); l++){
+                if(!brickCollection.getBricks()[l].isVisibility())
+                    c++;
+            }
+            if (c == brickCollection.getSize())
                 gameOverwon =true;
+            //if (brickCollection.allinVis() == true)
+              //  gameOverwon =true;
         }
     }
 
@@ -357,8 +371,15 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 soundon = true;
             }
-            if (brickCollection.allinVis() == true)
+            int c =0;
+            for (int l = 0; l < brickCollection.getSize(); l++){
+                if(!brickCollection.getBricks()[l].isVisibility())
+                    c++;
+            }
+            if (c == brickCollection.getSize())
                 gameOverwon =true;
+            //if (brickCollection.allinVis() == true)
+              //  gameOverwon =true;
         }
     }
 
@@ -378,8 +399,15 @@ public class GameView extends View {
                 brick.setVisibility(false);
                 soundon = true;
             }
-            if (brickCollection.allinVis() == true)
+            int c =0;
+            for (int l = 0; l < brickCollection.getSize(); l++){
+                if(!brickCollection.getBricks()[l].isVisibility())
+                    c++;
+            }
+            if (c == brickCollection.getSize())
                 gameOverwon =true;
+            //if (brickCollection.allinVis() == true)
+              //  gameOverwon =true;
         }
 
     }
